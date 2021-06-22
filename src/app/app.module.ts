@@ -4,8 +4,15 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { FormsModule } from '@angular/forms'
+import { HttpClientModule } from '@angular/common/http'
+
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -15,11 +22,15 @@ import { MatInputModule } from '@angular/material/input';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+
+    FormsModule,
+    HttpClientModule,
+
     MatInputModule,
     MatFormFieldModule,
-  ],
-  exports: [
-    MatFormFieldModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

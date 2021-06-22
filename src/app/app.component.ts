@@ -1,25 +1,146 @@
-import { Component } from '@angular/core';
-import { MatFormField } from '@angular/material/form-field';
+import { Component, Input } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+// import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
+// import { ErrorStateMatcher } from '@angular/material/core';
+// import { MatFormField } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.sass']
+  styleUrls: ['./app.component.sass'],
 })
 export class AppComponent {
-  title = 'sensor-querier';
+  title: string = 'sensor-querier';
 
-  cognitoUrl = ""
+  cognitoUrl: string = '';
+  apiGatewayUrl: string = 'https://1jcgpl8yp6.execute-api.eu-west-1.amazonaws.com/testing/query';
 
-  token = "";
+  cognitoLogin: string = "https://cpp-query.auth.eu-west-1.amazoncognito.com/login?client_id=6lbfiggvij0bm4cup35juggqut&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=http://localhost:4200"
 
-  showLogin = true;
+  accessToken: string = '';
 
-  attemptLoginWithCognito(){
+  showLogin: boolean = true;
 
+  @Input() username: string = '';
+  @Input() password: string = '';
+
+  @Input() customerId: string = '';
+  @Input() deviceId: string = '';
+
+  @Input() endDate: Date = new Date();
+  @Input() startDate: Date = new Date();
+
+  newDeviceId: string = '';
+  deviceIds: string[] = [];
+
+  credentialsDirty: boolean = false;
+
+  dataRequestDirty: boolean = false;
+
+  downloadLink: string = "";
+  linkError: boolean = false;
+
+  constructor(private http: HttpClient) {
+    let url = window.location.href;
+
+    let splitUrl : string[] = url.split("access_token=");
+
+    if(splitUrl.length > 1){
+      let accessTokenSplit = splitUrl[1].split("&");
+      this.accessToken = accessTokenSplit[0];
+    }
+
+    if(this.accessToken){
+      this.showLogin = false;
+    }
+  }
+
+  onSubmitCredentials() {
+    if (this.username != '' && this.password != '') {
+      this.showLogin = false;
+    } else {
+      this.credentialsDirty = true;
+    }
+  }
+
+  addDeviceId() {
+    if (this.deviceId) {
+      this.deviceIds.push(this.deviceId);
+      this.deviceId = '';
+    }
+  }
+
+  removeDeviceId(deviceId: string) {
+    for (var i = 0; i < this.deviceIds.length; i++) {
+      if (this.deviceIds[i] == deviceId) {
+        this.deviceIds.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  startDateIsBeforeEndDate() {
+    return this.startDate < this.endDate;
+  }
+
+  onSubmit() {
+    this.dataRequestDirty = true;
+
+    if (this.startDateIsBeforeEndDate() == false) {
+      return;
+    }
+
+    if (this.deviceIds.length <= 0) {
+      return;
+    }
+
+    if (this.customerId == '') {
+      return;
+    }
+
+    this.dataRequestDirty = false;
+
+    this.getLink(this.startDate, this.endDate, this.customerId, this.deviceIds).subscribe((response: any) => {
+      console.log(response);
+      this.downloadLink = response['body'];
+    }, (error) => {
+      this.linkError = true;
+      console.log(error);
+    });
+  }
+
+  getLink(
+    start: Date,
+    end: Date,
+    customerId: string,
+    deviceIds: string[]
+  ) : Observable<any>  {
+    //! Post request with token to API Gateway
+
+    let startString : string = start.toString().replace('T', ' ') + ":00"
+    let endString : string = end.toString().replace('T', ' ') + ":00"
+
+    let queryObject = {
+      "customerId": customerId,
+      "deviceIds": deviceIds,
+      "start": startString,
+      "end": endString,
+    }
+
+    let queryString : string = JSON.stringify(queryObject)
+
+    return this.http.post<any>(this.apiGatewayUrl, queryString, {
+      headers: {
+        "Authorization": this.accessToken
+      }
+    })
+
+    //This will expire in 5 minutes. Let the user know
   }
 
 
 
-
+  // https://cpp-query.auth.eu-west-1.amazoncognito.com/login?client_id=6lbfiggvij0bm4cup35juggqut&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://example.com/callback
 }
