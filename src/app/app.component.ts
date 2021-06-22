@@ -15,9 +15,9 @@ export class AppComponent {
   title: string = 'sensor-querier';
 
   cognitoUrl: string = '';
-  apiGatewayUrl: string = 'https://1jcgpl8yp6.execute-api.eu-west-1.amazonaws.com/testing/query';
 
-  cognitoLogin: string = "https://cpp-query.auth.eu-west-1.amazoncognito.com/login?client_id=6lbfiggvij0bm4cup35juggqut&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=http://localhost:4200"
+  apiGatewayUrl: string = 'https://1jcgpl8yp6.execute-api.eu-west-1.amazonaws.com/testing/query';
+  cognitoLogin: string = "https://cpp-query.auth.eu-west-1.amazoncognito.com/login?client_id=6lbfiggvij0bm4cup35juggqut&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://main.d2c7n7zjuk0ckl.amplifyapp.com/"
 
   accessToken: string = '';
 
@@ -54,6 +54,8 @@ export class AppComponent {
 
     if(this.accessToken){
       this.showLogin = false;
+    } else {
+      window.location.href = this.cognitoLogin;
     }
   }
 
