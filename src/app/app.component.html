@@ -105,24 +105,6 @@
         </div>
       </div>
 
-      <!-- <p> -->
-      <!-- <mat-form-field appearance="fill">
-          <div class="cpp-input-field" style="display: flex;">
-            <div style="float: left" style="flex-grow: 1;">
-              <p>
-                <mat-label>Device Id</mat-label>
-                <input [(ngModel)]="deviceId" matInput />
-              </p>
-            </div>
-            <div style="float: right">
-              <button mat-raised-button color="accent" (click)="addDeviceId()">
-                +
-              </button>
-            </div>
-          </div>
-        </mat-form-field> -->
-      <!-- </p> -->
-
       <p>
         <mat-chip-list>
           <mat-chip
@@ -137,7 +119,7 @@
       </p>
     </div>
 
-    <div style="position: relative">
+    <div *ngIf="!downloadLink" style="position: relative">
       <div style="float: right">
         <p>
           <button mat-raised-button color="accent" (click)="onSubmit()">
@@ -145,15 +127,36 @@
           </button>
         </p>
       </div>
+      <div *ngIf="loading" style="float: right">
+        <mat-progress-spinner
+          style="margin: 0 10px"
+          color="primary"
+          mode="indeterminate"
+          diameter="40"
+        >
+        </mat-progress-spinner>
+      </div>
     </div>
+    <p *ngIf="linkError">
+      Something went wrong. Please check your that the information is correct.
+    </p>
 
-    <div *ngIf="downloadLink">
-      <br />
-      <br />
-      <a href="{{ downloadLink }}">Download Sensor Data</a>
-      <p>
-        This link will expire in 5 minutes.
-      </p>
+    <div *ngIf="downloadLink" style="position: relative">
+      <div style="float: right">
+        <button mat-raised-button color="primary" (click)="onAnother()" >
+          <a style="color:white" href="{{ downloadLink }}">Download Sensor Data</a>
+        </button>
+      </div>
+      <div style="float: left">
+        <p>This link will expire in 5 minutes.</p>
+      </div>
+      <!-- <div style="float: right;">
+        <p>
+          <button mat-raised-button color="primary" (click)="onAnother()">
+            Get another dataset
+          </button>
+        </p>
+      </div> -->
     </div>
   </div>
 </div>

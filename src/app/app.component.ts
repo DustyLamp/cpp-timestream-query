@@ -17,7 +17,7 @@ export class AppComponent {
   cognitoUrl: string = '';
 
   apiGatewayUrl: string = 'https://1jcgpl8yp6.execute-api.eu-west-1.amazonaws.com/testing/query';
-  cognitoLogin: string = "https://cpp-query.auth.eu-west-1.amazoncognito.com/login?client_id=6lbfiggvij0bm4cup35juggqut&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://main.d2c7n7zjuk0ckl.amplifyapp.com/"
+  // cognitoLogin: string = "https://cpp-query.auth.eu-west-1.amazoncognito.com/login?client_id=6lbfiggvij0bm4cup35juggqut&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://main.d2c7n7zjuk0ckl.amplifyapp.com/"
 
   accessToken: string = '';
 
@@ -42,6 +42,8 @@ export class AppComponent {
   downloadLink: string = "";
   linkError: boolean = false;
 
+  loading: boolean = false;
+
   constructor(private http: HttpClient) {
     let url = window.location.href;
 
@@ -55,7 +57,7 @@ export class AppComponent {
     if(this.accessToken){
       this.showLogin = false;
     } else {
-      window.location.href = this.cognitoLogin;
+      // window.location.href = this.cognitoLogin;
     }
   }
 
@@ -87,7 +89,12 @@ export class AppComponent {
     return this.startDate < this.endDate;
   }
 
+  onAnother(){
+    this.downloadLink = "";
+  }
+
   onSubmit() {
+    this.linkError = false;
     this.dataRequestDirty = true;
 
     if (this.startDateIsBeforeEndDate() == false) {
@@ -102,14 +109,23 @@ export class AppComponent {
       return;
     }
 
+    this.loading = true;
     this.dataRequestDirty = false;
 
     this.getLink(this.startDate, this.endDate, this.customerId, this.deviceIds).subscribe((response: any) => {
       console.log(response);
-      this.downloadLink = response['body'];
+      if(response['statusCode'] == 500){
+        this.linkError = true;
+
+      } else {
+
+        this.downloadLink = response['body'];
+      }
+      this.loading = false;
     }, (error) => {
       this.linkError = true;
       console.log(error);
+      this.loading = false;
     });
   }
 
@@ -138,11 +154,5 @@ export class AppComponent {
         "Authorization": this.accessToken
       }
     })
-
-    //This will expire in 5 minutes. Let the user know
   }
-
-
-
-  // https://cpp-query.auth.eu-west-1.amazoncognito.com/login?client_id=6lbfiggvij0bm4cup35juggqut&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://example.com/callback
 }
