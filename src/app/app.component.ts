@@ -17,7 +17,7 @@ export class AppComponent {
   cognitoUrl: string = '';
 
   apiGatewayUrl: string = 'https://ee6boix0th.execute-api.eu-west-1.amazonaws.com/development/query';
-  cognitoLogin: string = "https://sensor-query-development.auth.eu-west-1.amazoncognito.com/login?client_id=265985ru35v0to8ae06lekbgm0&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=http://localhost:4200"
+  cognitoLogin: string = "https://sensor-query-dev-cpp-query-domain.auth.eu-west-1.amazoncognito.com/login?client_id=389iopmttjv3s4h28rslmu6sfh&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://main.dwujzq2e6bkwk.amplifyapp.com"
 
   accessToken: string = '';
 
